@@ -30,7 +30,7 @@ private:
 	int commufd_; /* 一条管道用于进程间的交流 */
 	bool passive_;
 	std::string ip_; /* ip地址 */
-	unsigned int port_; /* 端口 */
+	uint16_t port_; /* 端口 */
 };
 
 #endif

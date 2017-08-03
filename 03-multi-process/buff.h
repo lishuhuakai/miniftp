@@ -24,12 +24,12 @@ public:
 	{
 
 	}
-	// ä¸ä¿®æ”¹ç±»çš„æˆå‘˜å˜é‡çš„å€¼çš„å‡½æ•°éƒ½è¦ç”¨constä¿®é¥°,è¿™æ˜¯ä¸€ç§å¥½çš„ä¹ æƒ¯
-	size_t readableBytes() const { /* å¯è¯»çš„å­—èŠ‚æ•°ç›® */
+	// ²»ĞŞ¸ÄÀàµÄ³ÉÔ±±äÁ¿µÄÖµµÄº¯Êı¶¼ÒªÓÃconstĞŞÊÎ,ÕâÊÇÒ»ÖÖºÃµÄÏ°¹ß
+	size_t readableBytes() const { /* ¿É¶ÁµÄ×Ö½ÚÊıÄ¿ */
 		return writerIndex_ - readerIndex_;
 	}
 
-	size_t writableBytes() const { /* å¯å†™çš„å­—èŠ‚æ•°ç›® */
+	size_t writableBytes() const { /* ¿ÉĞ´µÄ×Ö½ÚÊıÄ¿ */
 		return buffer_.size() - writerIndex_;
 	}
 
@@ -37,8 +37,8 @@ public:
 		return readerIndex_;
 	}
 
-	const char* peek() const { /* å·çœ‹ */
-		return begin() + readerIndex_; // ä»è¿™é‡Œå¼€å§‹è¯»
+	const char* peek() const { /* Íµ¿´ */
+		return begin() + readerIndex_; // ´ÓÕâÀï¿ªÊ¼¶Á
 	}
 
 	const char* findEOL() const {
@@ -50,7 +50,7 @@ public:
 		const char* crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF + 2);
 		return crlf == beginWrite() ? NULL : crlf;
 	}
-	bool getLine(char *dest, size_t len); /* è¯»å–ä¸€è¡Œæ•°æ® */
+	bool getLine(char *dest, size_t len); /* ¶ÁÈ¡Ò»ĞĞÊı¾İ */
 
 	const char* findEOF() const {
 		const void* eol = memchr(peek(), '\n', readableBytes());
@@ -86,7 +86,7 @@ public:
 		retrieve(end - peek());
 	}
 
-	void ensureWritableBytes(size_t len) { /* ä¿è¯æœ‰è¶³å¤Ÿçš„å†™å…¥ç©ºé—´ */
+	void ensureWritableBytes(size_t len) { /* ±£Ö¤ÓĞ×ã¹»µÄĞ´Èë¿Õ¼ä */
 		if (writableBytes() < len) {
 			makeSpace(len);
 		}
@@ -99,13 +99,13 @@ public:
 		hasWritten(len);
 	}
 
-	void appendStr(const char* format, ...); /* æ ¼å¼åŒ–è¾“å…¥ */
+	void appendStr(const char* format, ...); /* ¸ñÊ½»¯ÊäÈë */
 
-	char* beginWrite() { /* å†™å…¥çš„èµ·å§‹åœ°æ–¹ */
+	char* beginWrite() { /* Ğ´ÈëµÄÆğÊ¼µØ·½ */
 		return begin() + writerIndex_;
 	}
 
-	const char* beginWrite() const { /* constç‰ˆæœ¬ */
+	const char* beginWrite() const { /* const°æ±¾ */
 		return begin() + writerIndex_;
 	}
 
@@ -114,7 +114,7 @@ public:
 		writerIndex_ += len;
 	}
 
-	void unwrite(size_t len) { /* æ’¤é”€ */
+	void unwrite(size_t len) { /* ³·Ïú */
 		assert(len <= readableBytes());
 		writerIndex_ -= len;
 	}
@@ -126,7 +126,7 @@ public:
 		std::copy(d, d + len, begin() + readerIndex_);
 	}
 
-	size_t internalCapacity() const { /* å®¹é‡å¤§å° */
+	size_t internalCapacity() const { /* ÈİÁ¿´óĞ¡ */
 		return buffer_.capacity();
 	}
 
@@ -141,11 +141,11 @@ private:
 
 	void makeSpace(size_t len) {
 		if (writableBytes() + prependableBytes() < len + kCheapPrepend) {
-			buffer_.resize(writerIndex_ + len); /* é‡æ–°åˆ†é…å­˜å‚¨ç©ºé—´ */
+			buffer_.resize(writerIndex_ + len); /* ÖØĞÂ·ÖÅä´æ´¢¿Õ¼ä */
 		}
-		else { /* å¦‚æœå‰©ä½™çš„ç©ºé—´å¤§å°è¶³å¤Ÿäº†! */
+		else { /* Èç¹ûÊ£ÓàµÄ¿Õ¼ä´óĞ¡×ã¹»ÁË! */
 			assert(kCheapPrepend < readerIndex_);
-			size_t readable = readableBytes(); /* å¯è¯»çš„å­—èŠ‚æ•°ç›® */
+			size_t readable = readableBytes(); /* ¿É¶ÁµÄ×Ö½ÚÊıÄ¿ */
 			std::copy(begin() + readerIndex_,
 				begin() + writerIndex_,
 				begin() + kCheapPrepend);

@@ -6,28 +6,28 @@ int64_t SpeedBarrier::maxDownloadSpeed = 1024 * 1024;
 int64_t SpeedBarrier::maxUploadSpeed = 1024 * 1024;
 
 void SpeedBarrier::limitSpeed(int64_t maxSpeed, size_t bytesTransed) {
-	/* å¼€å§‹é™åˆ¶é€Ÿåº¦ */
+	/* ¿ªÊ¼ÏŞÖÆËÙ¶È */
 	Timestamp now = Timestamp::now();
 	int64_t timePassed = now.microSecondsSinceEpoch() - start_.microSecondsSinceEpoch();
-	int64_t speedNow = bytesTransed / (static_cast<double>(timePassed) / Timestamp::kMicroSecondsPerSecond); /* æ±‚å‡ºæ¯ç§’é’Ÿä¼ é€çš„å­—èŠ‚æ•° */
+	int64_t speedNow = bytesTransed / (static_cast<double>(timePassed) / Timestamp::kMicroSecondsPerSecond); /* Çó³öÃ¿ÃëÖÓ´«ËÍµÄ×Ö½ÚÊı */
 	if (speedNow > maxSpeed) {
-		/* ç„¶åæˆ‘ä»¬å°±å¿…é¡»ä¼‘çœ  */
-		int64_t diff = speedNow - maxSpeed; /* æ±‚å‡ºä¸¤è€…ä¹‹é—´çš„å·®å€¼ */
+		/* È»ºóÎÒÃÇ¾Í±ØĞëĞİÃß */
+		int64_t diff = speedNow - maxSpeed; /* Çó³öÁ½ÕßÖ®¼äµÄ²îÖµ */
 		int64_t sleepMicroSeconds = (diff / static_cast<double>(maxSpeed)) * timePassed;
 		nanoSleep(sleepMicroSeconds);
-		//usleep(sleepMicroSeconds); // usleepè¦æ±‚å‚æ•°å°äº1000000,ä¹Ÿå°±æ˜¯1ç§’,è¿™æ˜¯ä¸ç°å®çš„.
+		//usleep(sleepMicroSeconds); // usleepÒªÇó²ÎÊıĞ¡ÓÚ1000000,Ò²¾ÍÊÇ1Ãë,ÕâÊÇ²»ÏÖÊµµÄ.
 	}
-	start_ = Timestamp::now(); /* é‡æ–°è®¡æ—¶ */
+	start_ = Timestamp::now(); /* ÖØĞÂ¼ÆÊ± */
 }
 
 void SpeedBarrier::nanoSleep(int64_t microSeconds) {
 	struct timespec timeSpan;
 	timeSpan.tv_sec = microSeconds / Timestamp::kMicroSecondsPerSecond;
-	// 1å¾®ç§’ç­‰äº1000çº³ç§’
-	timeSpan.tv_nsec = (microSeconds - timeSpan.tv_sec * Timestamp::kMicroSecondsPerSecond) * 1000; /* çº³ç§’çº§åˆ«çš„ç²¾åº¦ */
+	// 1Î¢ÃëµÈÓÚ1000ÄÉÃë
+	timeSpan.tv_nsec = (microSeconds - timeSpan.tv_sec * Timestamp::kMicroSecondsPerSecond) * 1000; /* ÄÉÃë¼¶±ğµÄ¾«¶È */
 	
 	int res;
 	do {
 		res = nanosleep(&timeSpan, &timeSpan);
-	} while (res == -1 && errno == EINTR); /* å¯èƒ½è¢«ä¿¡å·ä¸­æ–­,æ‰€ä»¥è¦ç”¨do whileæ ¼å¼ */
+	} while (res == -1 && errno == EINTR); /* ¿ÉÄÜ±»ĞÅºÅÖĞ¶Ï,ËùÒÔÒªÓÃdo while¸ñÊ½ */
 }

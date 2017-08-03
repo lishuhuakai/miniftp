@@ -8,20 +8,21 @@
 #include <map>
 #include <utility>
 #include "csapp.h"
-/*-
-* åŸç”Ÿçš„cè¯­è¨€ä¿¡å·å¤„ç†å‡½æ•°æ˜¯åœ¨ç®€é™‹,ç®€ç›´ä¸èƒ½å¿,æ‰€ä»¥åœ¨è¿™ä¸ªç±»é‡Œé¢,æˆ‘è¦åšä¸€ä¸‹ç®€å•çš„å°è£….
-*/
+
+/*
+ * Ô­ÉúµÄcÓïÑÔĞÅºÅ´¦Àíº¯ÊıÊÇÔÚ¼òÂª,¼òÖ±²»ÄÜÈÌ,ËùÒÔÔÚÕâ¸öÀàÀïÃæ,ÎÒÒª×öÒ»ÏÂ¼òµ¥µÄ·â×°.
+ */
 
 class SignalHandle : boost::noncopyable
 {
 public:
-	using handler = boost::function<void()>; /* å¤„ç†å‡½æ•° */
-	using Router = std::map<int, handler>; /* è·¯ç”± */
+	using handler = boost::function<void()>; /* ´¦Àíº¯Êı */
+	using Router = std::map<int, handler>; /* Â·ÓÉ */
 
 	SignalHandle();
 
 	void addSigHandle(int signo, handler&& func);
-	void BlockSigno(int signo); /* é˜»å¡æŸä¸ªä¿¡å· */
+	void BlockSigno(int signo); /* ×èÈûÄ³¸öĞÅºÅ */
 
 	handler& GetHandler(int signo) {
 		return router_[signo];

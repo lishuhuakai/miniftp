@@ -3,7 +3,7 @@
 #include <sys/file.h>
 #include <boost/noncopyable.hpp>
 
-/* å†™é” */
+/* Ğ´Ëø */
 class  FileWRLock : boost::noncopyable
 {
 public:
@@ -19,7 +19,7 @@ private:
 	int fd_;
 };
 
-/* è¯»é” */
+/* ¶ÁËø */
 class FileRDLock : boost::noncopyable 
 {
 public:
@@ -38,3 +38,4 @@ private:
 
 
 #endif
+

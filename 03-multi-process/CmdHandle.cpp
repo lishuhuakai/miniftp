@@ -17,16 +17,16 @@ using namespace utility;
 SignalHandle g_sighandle; /* 全局一个信号处理器 */
 
 void CmdHandle::HandleUrg() { /* 处理紧急数据 */
-	/*-
-	* 一般而言,对于正在传输中的数据连接,客户端会给服务器发送紧急数据,当然,我这里也没有处理,直接丢弃.
-	* 发送的紧急数据是什么呢? \377\364 \377\362之类的.
-	* \377\364 \377\362就是telnet协议中规定的操作，我翻译一下(操作序列)：'IAC' 'Interrupt Process' 'IAC' 'Data Mark'
-    * 其中：(１) \364表示操作：'Interrupt Process'，即实施telnet的The function IP。含义：ftp客户机告诉你这个FTP服务器，
-	* 赶快放下你现在手头的事情，马上处理我的事件(我有紧急数据到来)。
-	* (２) \362表示操作：'Data Mark',这个字节是ftp客户机以TCP的紧急模式发送的一个字节。含义：即：其后的数据必须立即读取。
-	* (３) \377即IAC，是telnet中的转义字节（即：255），每一个telnet操作（如：\364、\362）都必须以IAC开始。
-	* 如何处理? 因为f2是通过TCP紧急模式发送的一个字节而已。你只要将字节f2（即telnet操作：\362）丢弃即可以了。以上仅供你参考.
-	*/ 
+	/*
+	 * 一般而言,对于正在传输中的数据连接,客户端会给服务器发送紧急数据,当然,我这里也没有处理,直接丢弃.
+	 * 发送的紧急数据是什么呢? \377\364 \377\362之类的.
+	 * \377\364 \377\362就是telnet协议中规定的操作，我翻译一下(操作序列)：'IAC' 'Interrupt Process' 'IAC' 'Data Mark'
+     * 其中：(１) \364表示操作：'Interrupt Process'，即实施telnet的The function IP。含义：ftp客户机告诉你这个FTP服务器，
+	 * 赶快放下你现在手头的事情，马上处理我的事件(我有紧急数据到来)。
+	 * (２) \362表示操作：'Data Mark',这个字节是ftp客户机以TCP的紧急模式发送的一个字节。含义：即：其后的数据必须立即读取。
+	 * (３) \377即IAC，是telnet中的转义字节（即：255），每一个telnet操作（如：\364、\362）都必须以IAC开始。
+	 * 如何处理? 因为f2是通过TCP紧急模式发送的一个字节而已。你只要将字节f2（即telnet操作：\362）丢弃即可以了。以上仅供你参考.
+	 */ 
 	char cmd[256] = { 0 };
 	int errorno = 0;
 	buffer_.readFd(cmdfd_, &errorno);
@@ -93,14 +93,14 @@ void CmdHandle::RNTO() {
 
 void CmdHandle::ABOR() {
 	//Reply("%d Transfer failed.\r\n", FTP_BADSENDNET); /* 连接关闭,放弃传输 */
-	/*-
-	* 服务器接收这个命令时可能处在两种状态.(1) FTP服务命令已经完成了,或者(2)FTP服务还在执行中.
-	* 对于第一种情况，服务器关闭数据连接(如果数据连接是打开的)回应226代码,表示放弃命令已经成功处理.
-	* 对于第二种情况,服务器放弃正在进行的FTP服务,关闭数据连接,返回426响应代码,表示请求服务异常终止,
-	* 然后服务器发送226代码,表示放弃命令成功处理.
-	*
-	* 在我们的ABOR命令中,只发送了226代码,因为426代码在其余各个服务中发送.
-	*/
+	/*
+	 * 服务器接收这个命令时可能处在两种状态.(1) FTP服务命令已经完成了,或者(2)FTP服务还在执行中.
+	 * 对于第一种情况，服务器关闭数据连接(如果数据连接是打开的)回应226代码,表示放弃命令已经成功处理.
+	 * 对于第二种情况,服务器放弃正在进行的FTP服务,关闭数据连接,返回426响应代码,表示请求服务异常终止,
+	 * 然后服务器发送226代码,表示放弃命令成功处理.
+	 *
+	 * 在我们的ABOR命令中,只发送了226代码,因为426代码在其余各个服务中发送.
+	 */
 	Reply("%d No transfer to Abort!\r\n", FTP_TRANSFEROK);
 }
 
@@ -122,11 +122,11 @@ void CmdHandle::Handle() { /* 全局唯一一个入口函数 */
 	login(); /* 首先要解决的是login的问题 */
 	sighanler_.BlockSigno(SIGPIPE); /* 忽略SIGPIPE消息 */
 	
-	/*- 
-	* 这条命令还是很有必要的,因为系统可不知道cmdfd_所属的进程,所以它也不知道应该向谁发送SIGURG信号.
-	* 而设置了cmdfd_所属的进程之后,系统一旦检测到了客户端发来了紧急数据,就会立马通知该进程.否则的话
-	* 该进程是收不到SIGURG信号的.
-	*/
+	/*
+	 * 这条命令还是很有必要的,因为系统可不知道cmdfd_所属的进程,所以它也不知道应该向谁发送SIGURG信号.
+	 * 而设置了cmdfd_所属的进程之后,系统一旦检测到了客户端发来了紧急数据,就会立马通知该进程.否则的话
+	 * 该进程是收不到SIGURG信号的.
+	 */
 	fcntl(cmdfd_, F_SETOWN, getpid());
 
 	sighanler_.addSigHandle(SIGURG, boost::bind(&CmdHandle::HandleUrg, this));
@@ -204,11 +204,12 @@ void CmdHandle::CWD() {
 }
 
 void CmdHandle::PASV() { /* passive模式代表客户端来连接服务器,双方来协商一些连接的信息 */
+	/* pasv模式下,服务端选择一个传输数据的端口 */
 	CMD cmd = kExpectPort;
 	Write(commufd_, &cmd, sizeof(cmd));
 	int size;
 	char ip[20] = { 0 };
-	unsigned int port;
+	uint16_t port;
 	Read(commufd_, &size, sizeof(size)); /* 得到ip地址的长度 */
 	Read(commufd_, ip, size); /* 获得ip地址 */
 	Read(commufd_, &port, sizeof(port)); /* 获得端口地址 */
@@ -250,22 +251,22 @@ State CmdHandle::Sendlist(bool detail) {
 
 		if (detail) { /* 如果要发送完整的信息的话 */
 			int offset = 0;
-			offset += snprintf(buf, len, "%s ", permInfo);
-			offset += snprintf(buf + offset, len - offset, " %3d %-8d %-8d ", sbuf.st_nlink, sbuf.st_uid, sbuf.st_gid);
-			offset += snprintf(buf + offset, len - offset, "%8lu ", (unsigned long)sbuf.st_size); /* 文件大小 */
+			offset += sprintf(buf, "%s ", permInfo);
+			offset += sprintf(buf + offset, " %3d %-8d %-8d ", sbuf.st_nlink, sbuf.st_uid, sbuf.st_gid);
+			offset += sprintf(buf + offset, "%8lu ", (unsigned long)sbuf.st_size); /* 文件大小 */
 			const char *dateInfo = getdate(sbuf); /* 获得时间的信息 */
-			offset += snprintf(buf + offset, len - offset, "%s ", dateInfo);
+			offset += sprintf(buf + offset, "%s ", dateInfo);
 			if (S_ISLNK(sbuf.st_mode)) { /* 如果表示的是链接文件的话 */
 				char name[1024] = { 0 };
 				readlink(ent->d_name, name, sizeof(name));
-				offset += snprintf(buf + offset, len - offset, "%s -> %s\r\n", ent->d_name, name);
+				offset += sprintf(buf + offset, "%s -> %s\r\n", ent->d_name, name);
 			}
 			else {
-				offset += snprintf(buf + offset, len - offset, "%s\r\n", ent->d_name);
+				offset += sprintf(buf + offset, "%s\r\n", ent->d_name);
 			}
 		}
 		else {
-			snprintf(buf, len, "%s\r\n", ent->d_name);
+			sprintf(buf, "%s\r\n", ent->d_name);
 		}
 		Write(conn->GetFd(), buf, strlen(buf));
 	}
@@ -302,12 +303,13 @@ start:
 }
 
 void CmdHandle::PORT() { /* 来处理port命令 */
+	/* 关于port命令,客户端传递过来用于数据传送的ip地址和端口号,然后这个函数将其传递给另外一个进程 */
 	int ip[4];
 	unsigned int hPort, lPort;
 	char ipAddr[20] = { 0 };
 	sscanf(argv_.c_str(), "%d,%d,%d,%d,%u,%u", &ip[0], &ip[1], &ip[2], &ip[3], &hPort, &lPort); /* 主要用于获得对方的一系列信息 */
 	snprintf(ipAddr, sizeof(ipAddr), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]); /* 获得字符类型的ip */
-	unsigned int port = (hPort << 8) | (lPort & 0xFF); /* 得到port */
+	uint16_t port = (hPort << 8) | (lPort & 0xFF); /* 得到port */
 
 	/* 然后我们要发送将地址发送给另外一个进程 */
 	CMD cmd = kPort;
@@ -350,8 +352,8 @@ void CmdHandle::REST() {
 }
 
 
-void CmdHandle::RETR() {
-	Connection conn = GetConnect();
+void CmdHandle::RETR() { /* RETR命令用于获取数据文件 */
+	Connection conn = GetConnect(); /* 获得连接 */
 	int fd = open(argv_.c_str(), O_RDONLY, NULL); /* 打开文件 */
 	if (fd < 0) {
 		Reply("%d Open local file fail.\r\n", FTP_FILEFAIL);
@@ -383,7 +385,7 @@ void CmdHandle::RETR() {
 		// 读取文件内容,写入套接字
 		size = fileInfo.st_size;
 		if (resumePoint_ != 0) {
-			Lseek(fd, resumePoint_, SEEK_SET);
+			Lseek(fd, resumePoint_, SEEK_SET); /* 重定位文件 */
 			size -= resumePoint_; /* 需要传送的字节的数目 */
 		}
 
@@ -431,9 +433,9 @@ void CmdHandle::STOR() {
 
 	{
 		FileWRLock lock(fd); /* 对文件加写锁 */
-		/*-
-		* 在对文件进行续传的时候,对方会先发送rest命令,传递开始传送的位置.也就是我们这里的resumePoint_.
-		*/
+		/*
+		 * 在对文件进行续传的时候,对方会先发送rest命令,传递开始传送的位置.也就是我们这里的resumePoint_.
+		 */
 		if (resumePoint_ == 0) { 
 			ftruncate(fd, 0); /* 清空文件内容 */
 			Lseek(fd, 0, SEEK_SET); /* 定位到文件的开头 */
@@ -488,7 +490,7 @@ CmdHandle::Connection CmdHandle::GetConnect() { /* 得到一个连接 */
 	Write(commufd_, &cmd, sizeof(cmd));
 	Read(commufd_, &state, sizeof(state)); /* 读取状态信息 */
 	if (Success == state) {
-		datafd = recvfd(commufd_); /* 接收fd */
+		datafd = recvfd(commufd_); /* 接收fd,注意,这个文件描述符在不同进程间进行传递 */
 	}
 	return boost::make_shared<Conn>(datafd);
 }
@@ -531,9 +533,9 @@ void CmdHandle::SITE() {
 	argv[count].assign(start, end);
 	count += 1;
 	
-	/*-
-	* 这些命令应该不会成功,因为这个程序并没有在root下运行.
-	*/
+	/*
+	 * 这些命令应该不会成功,因为这个程序并没有在root下运行.
+	 */
 
 	if ((argv[0] == "CHMOD") && count == 3) {
 		/*SITE CHMOD <perm> <file>*/

@@ -45,6 +45,7 @@ void DataHandle::SetPeerAddr() { /* 设置对方的地址 */
 
 void DataHandle::PasvListen() {
 	if (sockfd_ == -1) { /* 已经初始化过了,就不再初始化了 */
+		/* 数据处理这端开始监听 */
 		sockfd_ = Open_listenfd(0); /* 0代表任意选择一个端口 */
 		struct sockaddr_in localaddr;
 		socklen_t len = sizeof(localaddr);
@@ -65,14 +66,15 @@ void DataHandle::GotFd() {
 		fd = Accept(sockfd_, NULL, NULL); /* 获得一个连接 */
 	} 
 	else { /* 主动模式有点问题,主要是在局域网里连接不到 */
+		/* 下面的Open_clientfd函数用于连接客户端,里面有调用connnet函数 */
 		fd = Open_clientfd(ip_.c_str(), port_); /* 端口填0的话,会随机分配一个端口 */
 	}
 	//printf("ip : %s\n", ip_.c_str());
 	State state = Success;
 	Write(commufd_, &state, sizeof(state)); /* 先发送成功的消息 */
 	//printf("Got fd! %d\n", fd);
-	sendfd(commufd_, fd); /* 发送文件描述符 */
-	close(fd); 
+	sendfd(commufd_, fd); /* 发送文件描述符,需要注意的是,文件描述符在两个不同的进程间传递 */
+	close(fd);  /* 传输完文件描述符后一定要记得关闭这个文件描述符 */
 }
 
 const char* DataHandle::GetLocalIP() { /* 得到本机的ip地址 */

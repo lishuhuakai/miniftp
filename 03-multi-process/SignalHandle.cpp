@@ -1,6 +1,6 @@
 #include "SignalHandle.h"
 
-static SignalHandle* handle; /* dirtyçš„ä»£ç è¦å°è£…èµ·æ¥ */
+static SignalHandle* handle; /* dirtyµÄ´úÂëÒª·â×°ÆğÀ´ */
 
 static void sighandler(int);
 
@@ -14,13 +14,13 @@ static void addsig(int sig) {
 }
 
 
-static void sighandler(int signo) { /* ä¸ºäº†é˜²æ­¢æ±¡æŸ“æ•´ä¸ªåº”ç”¨,æ‰€ä»¥è®¾ç½®ä¸ºäº†staticç±»å‹ */
+static void sighandler(int signo) { /* ÎªÁË·ÀÖ¹ÎÛÈ¾Õû¸öÓ¦ÓÃ,ËùÒÔÉèÖÃÎªÁËstaticÀàĞÍ */
 	boost::function<void()> func = handle->GetHandler(signo);
 	if (func)
 		func();
 }
 
-void SignalHandle::BlockSigno(int signo) { /* é˜»å¡æ‰æŸä¸ªä¿¡å· */
+void SignalHandle::BlockSigno(int signo) { /* ×èÈûµôÄ³¸öĞÅºÅ */
 	sigset_t signal_mask;
 	utility::Sigemptyset(&signal_mask);
 	utility::Sigaddset(&signal_mask, signo);
@@ -29,10 +29,10 @@ void SignalHandle::BlockSigno(int signo) { /* é˜»å¡æ‰æŸä¸ªä¿¡å· */
 
 void SignalHandle::addSigHandle(int signo, handler&& func) {
 	router_[signo] = std::move(func);
-	//utility::Signal(SIGURG, sighandler); /* æ³¨å†Œä¿¡å·å¤„ç†å‡½æ•° */
+	//utility::Signal(SIGURG, sighandler); /* ×¢²áĞÅºÅ´¦Àíº¯Êı */
 	addsig(signo);
 }
 
-SignalHandle::SignalHandle() { /* åˆå§‹åŒ–å‡½æ•° */
-	handle = this; /* è®°å½•ä¸‹æŒ‡é’ˆçš„å€¼ */
+SignalHandle::SignalHandle() { /* ³õÊ¼»¯º¯Êı */
+	handle = this; /* ¼ÇÂ¼ÏÂÖ¸ÕëµÄÖµ */
 }

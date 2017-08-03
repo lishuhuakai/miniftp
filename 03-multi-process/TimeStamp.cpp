@@ -5,7 +5,7 @@
 
 Timestamp Timestamp::now() {
 	struct timeval tv;
-	gettimeofday(&tv, NULL); /* NULLè¡¨ç¤ºæˆ‘ä»¬ä¸éœ€è¦æ—¶åŒºçš„ä¿¡æ¯ */
-	int64_t seconds = tv.tv_sec; /* å¾—åˆ°å¯¹åº”çš„ç§’æ•° */
-	return Timestamp(seconds * kMicroSecondsPerSecond + tv.tv_usec); /* Timestampå†…éƒ¨æ˜¯ç”¨å¾®ç§’æ¥è¡¨ç¤ºçš„! */
+	gettimeofday(&tv, NULL); /* NULL±íÊ¾ÎÒÃÇ²»ĞèÒªÊ±ÇøµÄĞÅÏ¢ */
+	int64_t seconds = tv.tv_sec; /* µÃµ½¶ÔÓ¦µÄÃëÊı */
+	return Timestamp(seconds * kMicroSecondsPerSecond + tv.tv_usec); /* TimestampÄÚ²¿ÊÇÓÃÎ¢ÃëÀ´±íÊ¾µÄ! */
 }
