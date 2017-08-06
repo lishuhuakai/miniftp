@@ -31,19 +31,19 @@ ssize_t Buffer::readFd(int fd, int* savedErrno)
 	return n;
 }
 
-bool Buffer::getLine(char *dest, size_t len) { /* ¶ÁÈ¡Ò»ĞĞÊı¾İ */
+bool Buffer::getLine(char *dest, size_t len) { /* è¯»å–ä¸€è¡Œæ•°æ® */
 	const char* end = findEOL();
 	strncpy(dest, peek(), readableBytes());
 
 	//printf("** line : %s\n", peek());
-	if (end == 0) return false; /* Ã»ÓĞÕÒµ½»»ĞĞ·û */
+	if (end == 0) return false; /* æ²¡æœ‰æ‰¾åˆ°æ¢è¡Œç¬¦ */
 
 	const char* start = peek();
-	assert(end >= start); /* ±£Ö¤sizeÊÇÒ»¸öÕıÊı,È»ºóÏÂÃæstatic_cast×ª»»µÄÊ±ºò²Å»áÕıÈ· */
+	assert(end >= start); /* ä¿è¯sizeæ˜¯ä¸€ä¸ªæ­£æ•°,ç„¶åä¸‹é¢static_castè½¬æ¢çš„æ—¶å€™æ‰ä¼šæ­£ç¡® */
 	ptrdiff_t size = end - start - 1;
 
 	if (len < static_cast<size_t>(size)) {
-		return false; /* ¿Õ¼ä²»¹» */
+		return false; /* ç©ºé—´ä¸å¤Ÿ */
 	}
 	std::copy(start, end - 1, dest);
 	dest[size] = 0;
@@ -51,7 +51,7 @@ bool Buffer::getLine(char *dest, size_t len) { /* ¶ÁÈ¡Ò»ĞĞÊı¾İ */
 	return true;
 }
 
-void Buffer::appendStr(const char* format, ...) { /* ¸ñÊ½»¯ÊäÈë */
+void Buffer::appendStr(const char* format, ...) { /* æ ¼å¼åŒ–è¾“å…¥ */
 	char extralbuf[256];
 	memset(extralbuf, 0, sizeof extralbuf);
 	va_list arglist;

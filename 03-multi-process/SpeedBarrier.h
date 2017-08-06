@@ -3,7 +3,7 @@
 #include <boost/noncopyable.hpp>
 #include "TimeStamp.h"
 
-/* ÏÂÔØ»òÕßÉÏ´«ËÙ¶ÈÏŞÖÆÆ÷ */
+/* ä¸‹è½½æˆ–è€…ä¸Šä¼ é€Ÿåº¦é™åˆ¶å™¨ */
 class SpeedBarrier : boost::noncopyable
 {
 public:
@@ -12,11 +12,11 @@ public:
 		start_ = Timestamp::now();
 	}
 	void limitSpeed(int64_t maxSpeed, size_t bytesTransed);
-	static int64_t maxDownloadSpeed; /* ×î´óµÄÏÂÔØËÙ¶È */
-	static int64_t maxUploadSpeed; /* ×î´óµÄÉÏ´«ËÙ¶È */
+	static int64_t maxDownloadSpeed; /* æœ€å¤§çš„ä¸‹è½½é€Ÿåº¦ */
+	static int64_t maxUploadSpeed; /* æœ€å¤§çš„ä¸Šä¼ é€Ÿåº¦ */
 private:
 	void nanoSleep(int64_t microSeconds);
 private:
-	Timestamp start_; /* ¿ªÊ¼µÄÊ±¼ä */
+	Timestamp start_; /* å¼€å§‹çš„æ—¶é—´ */
 };
 #endif

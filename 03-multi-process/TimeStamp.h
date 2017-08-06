@@ -36,7 +36,7 @@ public:
 		return Timestamp();
 	}
 
-	static const int kMicroSecondsPerSecond = 1000 * 1000; /* 1ÃëµÈÓÚ1000000Î¢Ãë */
+	static const int kMicroSecondsPerSecond = 1000 * 1000; /* 1ç§’ç­‰äºŽ1000000å¾®ç§’ */
 private:
 	int64_t microSecondsSinceEpoch_;
 };
